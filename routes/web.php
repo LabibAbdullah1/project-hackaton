@@ -1,29 +1,50 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LandingController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TestimonyController;
-use App\Http\Controllers\MessageController;
-use App\Http\Controllers\MoodResultController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// ======================================
+// PUBLIC LANDING PAGE
+// ======================================
+Route::get('/', [LandingController::class, 'index'])->name('landing.index');
+Route::get('/demo', function () {
+    return view('landing.demo');
+})->name('demo');
 
-Route::middleware('auth')->group(function () {
+Route::get('/hero', [LandingController::class, 'hero'])->name('landing.hero');
+Route::get('/features', [LandingController::class, 'features'])->name('landing.features');
+Route::get('/cta', [LandingController::class, 'cta'])->name('landing.cta');
+Route::get('/testimonials', [LandingController::class, 'testimonials'])->name('landing.testimonials');
+
+
+// ======================================
+// USER ROUTES (LOGIN + VERIFIED)
+// ======================================
+Route::middleware(['auth', 'verified'])->group(function () {
+
+    Route::get('/dashboard', [UserDashboardController::class, 'index'])
+        ->name('dashboard');
+
+    // Profile management (breeze default)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-use App\Http\Controllers\DiaryController;
 
+// ======================================
+// ADMIN ROUTES (ROLE ADMIN REQUIRED)
+// ======================================
+Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 
-Route::middleware('auth')->group(function () {
-    Route::post('/diaries/submit', [DiaryController::class, 'store'])->name('diaries.store');
+    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
+        ->name('admin.dashboard');
 });
-require __DIR__.'/auth.php';
+
+
+// Auth Routes (Login, Register, Forgot Password)
+require __DIR__ . '/auth.php';
