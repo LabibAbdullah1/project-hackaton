@@ -4,7 +4,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DiaryController;
 use App\Http\Controllers\DiaryAnalysisController;
 use App\Http\Controllers\TestimonyController;
-use App\Http\Controllers\AdminDashboardController; // Controller Baru untuk Admin
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,8 +27,6 @@ Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
 
 
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('testimony', TestimonyController::class)->except(['create', 'store']); // Create & Store ada di sisi User
 
