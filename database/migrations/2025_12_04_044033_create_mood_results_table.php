@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('mood_results', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('massage_id')->constrained()->onDelete('cascade');
             $table->string('mood_label');
             $table->float('confidence')->nullable();
             $table->text('description')->nullable();
