@@ -9,7 +9,7 @@ class AiRespons extends Model
 {
     use HasFactory;
 
-    protected $table = 'ai_respons';
+    protected $table = 'AiRespons';
 
     protected $fillable = [
         'user_id',
