@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mood_results', function (Blueprint $table) {
+        Schema::create('diaries', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('mood_label');
-            $table->float('confidence')->nullable();
-            $table->text('description')->nullable();
-            $table->text('motivation')->nullable();
-            $table->longText('raw_response')->nullable();
+            $table->text('content');
+            $table->boolean('is_private')->default(true);
             $table->timestamps();
         });
     }
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('mood_results');
+        Schema::dropIfExists('diaries');
     }
 };

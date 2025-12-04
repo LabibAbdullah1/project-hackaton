@@ -1,7 +1,10 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TestimonyController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\MoodResultController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,4 +20,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+use App\Http\Controllers\DiaryController;
+
+
+Route::middleware('auth')->group(function () {
+    Route::post('/diaries/submit', [DiaryController::class, 'store'])->name('diaries.store');
+});
 require __DIR__.'/auth.php';

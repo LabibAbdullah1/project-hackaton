@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('massages', function (Blueprint $table) {
+        Schema::create('diary_analyses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->text('user_massage');
+            $table->foreignId('diary_id')->constrained()->onDelete('cascade');
+            $table->string('mood');
+            $table->tinyInteger('mood_score')->nullable();
+            $table->text('reflection')->nullable();
+            $table->text('habit_insight')->nullable();
             $table->timestamps();
         });
     }
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('massages');
+        Schema::dropIfExists('diary_analyses');
     }
 };

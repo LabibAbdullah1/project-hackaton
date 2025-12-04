@@ -4,62 +4,61 @@ namespace App\Http\Controllers;
 
 use App\Models\Testimony;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TestimonyController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $testimonies = Testimony::with('user')->paginate(10);
+        return view('testimonies.index', compact('testimonies'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('testimonies.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'message' => 'required|string|max:2000',
+        ]);
+
+        Testimony::create([
+            'user_id' => Auth::id(),
+            'message' => $request->message,
+            'rating' => $request->rating ?? null,
+        ]);
+
+        return redirect()->route('testimonies.index')->with('success', 'Testimoni berhasil dikirim!');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Testimony $testimony)
     {
-        //
+        return view('testimonies.show', compact('testimony'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Testimony $testimony)
     {
-        //
+        return view('testimonies.edit', compact('testimony'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Testimony $testimony)
     {
-        //
+        $request->validate([
+            'message' => 'required|string|max:2000',
+        ]);
+
+        $testimony->update($request->all());
+
+        return redirect()->route('testimonies.index')->with('success', 'Testimoni berhasil diperbarui!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Testimony $testimony)
     {
-        //
+        $testimony->delete();
+
+        return redirect()->route('testimonies.index')->with('success', 'Testimoni berhasil dihapus!');
     }
 }

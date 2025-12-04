@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('password');
             // buatkan enum preference untuk motivation preference
 
-            $table->enum('motivation_preference', ['general','career','']);
             $table->rememberToken();
             $table->timestamps();
         });
