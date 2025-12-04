@@ -22,9 +22,8 @@ Route::middleware('auth')->group(function () {
 
 use App\Http\Controllers\DiaryController;
 
-// Gunakan middleware 'auth' standar
+
 Route::middleware('auth')->group(function () {
-    // URL yang lebih 'web-friendly'
     Route::post('/diaries/submit', [DiaryController::class, 'store'])->name('diaries.store');
 });
 require __DIR__.'/auth.php';
