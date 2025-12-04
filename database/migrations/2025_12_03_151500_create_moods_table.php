@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('moods', function (Blueprint $table) {
             $table->id();
-            $table->string('category');
-            $table->string('intensity');
+            $table->string('mood_name');
             $table->timestamps();
         });
     }

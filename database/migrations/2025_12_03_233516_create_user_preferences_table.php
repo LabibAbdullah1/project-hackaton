@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ai_respons', function (Blueprint $table) {
+        Schema::create('user_preferences', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->text('user_message');
-            $table->foreignId('mood_id')->nullable()->constrained('moods')->onDelete('set null');
-            $table->text('ai_respon');
-            $table->text('motivation')->nullable();
-            $table->integer('processing_time_ms')->nullable();
+            $table->string('nickname')->nullable();
+            $table->string('communication_style')->default('Santai');
+            $table->text('interests')->nullable();
+            $table->enum('motivation_style', ['gentle', 'tough_love'])->default('gentle');
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ai_respons');
+        Schema::dropIfExists('user_preferences');
     }
 };
