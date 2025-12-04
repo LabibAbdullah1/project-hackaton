@@ -15,9 +15,10 @@
 
             <!-- Navigation Links - Hidden on Mobile -->
             <div class="hidden lg:flex items-center space-x-8">
+                <a href="#index" class="text-gray-700 hover:text-purple-600 transition-colors font-medium">Home</a>
                 <a href="#features" class="text-gray-700 hover:text-purple-600 transition-colors font-medium">Fitur</a>
-                <a href="#about" class="text-gray-700 hover:text-purple-600 transition-colors font-medium">Tentang</a>
-                <a href="#contact" class="text-gray-700 hover:text-purple-600 transition-colors font-medium">Kontak</a>
+                <a href="#testimonials"
+                    class="text-gray-700 hover:text-purple-600 transition-colors font-medium">Testimoni</a>
             </div>
 
             <!-- CTA Buttons -->
@@ -27,6 +28,13 @@
                         class="hidden sm:inline-block text-purple-600 hover:text-purple-700 font-semibold transition-colors text-sm lg:text-base">
                         Dashboard
                     </a>
+                    <form action="{{ route('logout') }}" method="POST" class="inline-block">
+                        @csrf
+                        <button type="submit"
+                            class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 sm:px-6 py-2 rounded-full text-sm sm:text-base font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
+                            Logout
+                        </button>
+                    </form>
                 @else
                     <a href="{{ route('login') }}"
                         class="hidden sm:inline-block text-purple-600 hover:text-purple-700 font-semibold transition-colors text-sm lg:text-base">

@@ -14,7 +14,7 @@
                     <span class="ml-2 text-lg sm:text-xl font-bold text-white">VibeSense AI</span>
                 </div>
                 <p class="text-xs sm:text-sm leading-relaxed pr-4">
-                    Platform curhat berbasis AI yang membantu memahami emosimu dengan aman, nyaman, dan intuitif.
+                    Platform diary berbasis AI yang membantu memahami emosimu dengan aman, nyaman, dan intuitif.
                 </p>
             </div>
 

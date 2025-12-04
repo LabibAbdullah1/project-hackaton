@@ -1,4 +1,4 @@
-<section class="pt-24 sm:pt-32 pb-12 sm:pb-20 px-4 sm:px-6 lg:px-8">
+<section id="index" class="pt-24 sm:pt-32 pb-12 sm:pb-20 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
         <div class="grid md:grid-cols-2 gap-8 sm:gap-12 items-center">
             <!-- Left Content -->
@@ -17,8 +17,8 @@
                 </h1>
 
                 <p class="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed">
-                    VibeSense AI adalah tempat curhat digital yang aman dan privat. Tulis apa yang kamu rasakan,
-                    dapatkan balasan empati dari AI, dan lihat analisis emosional untuk memahami dirimu lebih dalam.
+                    VibeSense AI jadi diary digitalmu yang selalu siap mendengar. Tulis apa pun tentang harimu, biarkan
+                    AI merangkum, menganalisis mood, dan memberikan refleksi supaya kamu makin kenal diri sendiri.
                 </p>
 
                 <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -33,7 +33,7 @@
                             Mulai Menulis Sekarang
                         </a>
                     @endauth
-                    <a href="#features"
+                    <a href="{{ route('demo') }}"
                         class="border-2 border-purple-600 text-purple-600 px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-base sm:text-lg hover:bg-purple-50 transition-all duration-200 text-center">
                         Lihat Demo
                     </a>
