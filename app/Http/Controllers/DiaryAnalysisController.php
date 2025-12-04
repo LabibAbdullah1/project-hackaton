@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MoodResult;
+use App\Models\DiaryAnalysis;
 use Illuminate\Http\Request;
 
-class MoodResultController extends Controller
+class DiaryAnalysisController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +34,7 @@ class MoodResultController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(MoodResult $moodResult)
+    public function show(DiaryAnalysis $diaryAnalysis)
     {
         //
     }
@@ -42,7 +42,7 @@ class MoodResultController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(MoodResult $moodResult)
+    public function edit(DiaryAnalysis $diaryAnalysis)
     {
         //
     }
@@ -50,7 +50,7 @@ class MoodResultController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, MoodResult $moodResult)
+    public function update(Request $request, DiaryAnalysis $diaryAnalysis)
     {
         //
     }
@@ -58,7 +58,7 @@ class MoodResultController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(MoodResult $moodResult)
+    public function destroy(DiaryAnalysis $diaryAnalysis)
     {
         //
     }
