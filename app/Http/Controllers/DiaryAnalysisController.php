@@ -10,14 +10,14 @@ class DiaryAnalysisController extends Controller
 {
     public function index()
     {
-        $analyses = DiaryAnalysis::whereHas('diary', function ($query) {
+        $analysis = DiaryAnalysis::whereHas('diary', function ($query) {
             $query->where('user_id', Auth::id());
         })
             ->with('diary')
             ->latest()
             ->paginate(15);
 
-        return view('analysis.index', compact('analyses'));
+        return view('analysis.index', compact('analysis'));
     }
 
     public function create()
