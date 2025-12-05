@@ -19,7 +19,11 @@ class Diary extends Model
 
     protected $casts = [
         'is_private' => 'boolean',
-        'content' => 'encrypted', 
+        'content' => 'encrypted',
+    ];
+
+    protected $attributes = [
+        'is_private' => true,
     ];
 
     public function user(): BelongsTo

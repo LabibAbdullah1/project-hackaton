@@ -18,56 +18,54 @@ class DiaryController extends Controller
 
     public function index()
     {
-        // Mengambil diary milik user yang login, diurutkan dari terbaru.
-        // 'with("analysis")' digunakan agar hemat query database (Eager Loading).
         $diaries = Diary::with('analysis')
             ->where('user_id', Auth::id())
             ->latest()
-            ->paginate(10); // Menampilkan 10 per halaman
+            ->paginate(10);
 
         return view('user.diary.index', compact('diaries'));
     }
 
-    /**
-     * 2. CREATE: Menampilkan form tambah diary.
-     */
+
     public function create()
     {
         return view('user.diary.create');
     }
 
-    /**
-     * 3. STORE: Simpan Diary Baru & Jalankan Analisis KA.
-     */
     public function store(Request $request)
     {
-        // Validasi input
+        // 1. Validasi Input
         $request->validate([
-            'content' => 'required|string|min:10', // Minimal 10 karakter agar AI bisa baca
+            'content' => 'required|string|min:10',
             'is_private' => 'required|boolean',
         ]);
 
-        // Simpan data dasar ke tabel 'diaries'
+        // 2. Simpan Data Diary ke Database
         $diary = Diary::create([
             'user_id' => Auth::id(),
             'content' => $request->input('content'),
             'is_private' => $request->input('is_private'),
         ]);
 
-        // PROSES KA (Synchronous/Realtime)
-        // Memanggil fungsi privat yang menjalankan 3 analisis sekaligus
-        $this->processAnalysis($diary);
+        // 3. Proses KA (Dengan Error Handling Halus)
+        try {
+            $this->processAnalysis($diary);
 
-        return redirect()->route('user.diary.show', $diary->id)
-            ->with('success', 'Diary berhasil disimpan! Analisis Mood, Refleksi, dan Habit telah siap.');
+            return redirect()
+                ->route('user.diary.show', $diary->id)
+                ->with('success', 'Diary berhasil disimpan dan analisis AI selesai!');
+        } catch (\Exception $e) {
+
+            Log::error("KA Error pada Diary ID {$diary->id}: " . $e->getMessage());
+
+            return redirect()
+                ->route('user.diary.show', $diary->id)
+                ->with('warning', 'Diary berhasil disimpan, namun analisis AI sedang tidak tersedia saat ini.');
+        }
     }
 
-    /**
-     * 4. SHOW: Menampilkan detail diary & hasil analisis.
-     */
     public function show($id)
     {
-        // Cari diary berdasarkan ID, pastikan milik user yang login (Keamanan)
         $diary = Diary::with('analysis')
             ->where('user_id', Auth::id())
             ->findOrFail($id);
@@ -75,18 +73,12 @@ class DiaryController extends Controller
         return view('user.diary.show', compact('diary'));
     }
 
-    /**
-     * 5. EDIT: Menampilkan form edit diary.
-     */
     public function edit($id)
     {
         $diary = Diary::where('user_id', Auth::id())->findOrFail($id);
         return view('user.diary.edit', compact('diary'));
     }
 
-    /**
-     * 6. UPDATE: Memperbarui isi diary & Analisis Ulang jika perlu.
-     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -96,122 +88,107 @@ class DiaryController extends Controller
 
         $diary = Diary::where('user_id', Auth::id())->findOrFail($id);
 
-        $oldContent = $diary->content;
-        $newContent = $request->input('content');
+        $contentChanged = $diary->content !== $request->input('content');
 
-        // Update data di database
         $diary->update([
-            'content' => $newContent,
+            'content' => $request->input('content'),
             'is_private' => $request->input('is_private'),
         ]);
 
-        // LOGIKA PINTAR: Cek apakah isi konten berubah?
-        if ($oldContent !== $newContent) {
-            // Jika berubah, analisis lama sudah tidak valid. Hapus dulu.
-            if ($diary->analysis) {
-                $diary->analysis->delete();
+        $message = 'Diary berhasil diperbarui.';
+
+        if ($contentChanged) {
+            try {
+                if ($diary->analysis) {
+                    $diary->analysis->delete();
+                }
+                $this->processAnalysis($diary);
+                $message .= ' Analisis KA telah diperbarui sesuai cerita baru.';
+            } catch (\Exception $e) {
+                Log::error("Update KA Error ID {$diary->id}: " . $e->getMessage());
+                $message .= ' Namun gagal memperbarui analisis KA.';
             }
-
-            // Jalankan ulang KA untuk konten baru
-            $this->processAnalysis($diary);
-
-            $message = 'Diary diperbarui. Analisis baru (Mood, Refleksi, Habit) telah dibuat!';
-        } else {
-            // Jika cuma ubah status privasi, tidak perlu panggil AI (Hemat kuota API)
-            $message = 'Status privasi diary berhasil diperbarui.';
         }
 
         return redirect()->route('user.diary.show', $diary->id)->with('success', $message);
     }
 
     /**
-     * 7. DESTROY: Menghapus diary.
+     * Hapus diary.
      */
     public function destroy($id)
     {
         $diary = Diary::where('user_id', Auth::id())->findOrFail($id);
-
-        if ($diary->analysis) {
-            $diary->analysis->delete();
-        }
-
         $diary->delete();
 
         return redirect()->route('user.diary.index')->with('success', 'Diary berhasil dihapus.');
     }
 
-    // =========================================================================
-    // PRIVATE METHODS (Logika Internal KA)
-    // =========================================================================
-
     private function processAnalysis(Diary $diary)
     {
-        try {
-            $analysisData = $this->callKaApi($diary->content);
+        $analysisData = $this->callKaApi($diary->content);
 
-            DiaryAnalysis::create([
-                'diary_id' => $diary->id,
-                'mood' => $analysisData['mood'] ?? 'Netral',
-                'mood_score' => isset($analysisData['mood_score']) ? (int) $analysisData['mood_score'] : 50,
-                'reflection' => $analysisData['reflection'] ?? 'Tidak ada refleksi saat ini.',
-                'habit_insight' => $analysisData['habit_insight'] ?? 'Belum ada pola kebiasaan terdeteksi.',
-            ]);
-        } catch (\Exception $e) {
-            Log::error("KA Error pada Diary ID {$diary->id}: " . $e->getMessage());
-        }
+        DiaryAnalysis::create([
+            'diary_id' => $diary->id,
+            'mood' => $analysisData['mood'] ?? 'Netral',
+            'mood_score' => isset($analysisData['mood_score']) ? (int) $analysisData['mood_score'] : 50,
+            'reflection' => $analysisData['reflection'] ?? 'Tidak ada refleksi.',
+            'habit_insight' => $analysisData['habit_insight'] ?? 'Belum ada habit.',
+        ]);
     }
-
 
     private function callKaApi(string $content): array
     {
         set_time_limit(60);
 
+        $apiKey = env('KOLOSAL_API_KEY');
+        $baseUrl = env('KOLOSAL_BASE_URL');
+        $model = env('KOLOSAL_MODEL');
+
+        if (!$apiKey) {
+            throw new \Exception("API Key belum disetting di server.");
+        }
+
         $jsonSchema = [
-            'mood' => 'string (Contoh: Bahagia, Cemas, Marah, Tenang, Sedih)',
+            'mood' => 'string (Singkat: Bahagia/Sedih/Cemas)',
             'mood_score' => 'integer (0-100)',
-            'reflection' => 'string (Refleksi singkat dan hangat untuk user, maks 2 kalimat)',
-            'habit_insight' => 'string (Analisis pola kebiasaan atau saran aksi nyata, maks 2 kalimat)',
+            'reflection' => 'string (Refleksi hangat maks 2 kalimat)',
+            'habit_insight' => 'string (Saran aksi maks 2 kalimat)',
         ];
 
-        $apiKey = env('KOLOSAL_API_KEY');
-        $baseUrl = env('KOLOSAL_BASE_URL', 'https://api.kolosal.ai/v1');
-        $model = env('KOLOSAL_MODEL', 'Claude Sonnet 4.5');
-
-        $response = Http::timeout(50)
-            ->withHeaders(['Authorization' => 'Bearer ' . $apiKey])
-            ->post($baseUrl . '/chat/completions', [
+        // Kirim Request
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $apiKey,
+            'Content-Type'  => 'application/json',
+            'Accept'        => 'application/json',
+        ])
+            ->timeout(45)
+            ->post($baseUrl, [
                 'model' => $model,
                 'messages' => [
-                    [
-                        'role' => 'system',
-                        'content' => "Anda adalah Vibessense KA, asisten kesehatan mental. Tugas Anda:
-                        1. Analisis Mood (Mood Analyzer).
-                        2. Berikan Refleksi Harian (Daily Reflection).
-                        3. Deteksi Kebiasaan/Saran (Habit Understanding).
-
-                        Keluarkan hasil HANYA dalam format JSON valid sesuai skema ini: " . json_encode($jsonSchema),
-                    ],
-                    [
-                        'role' => 'user',
-                        'content' => "Ini cerita diary saya: \n\n" . $content
-                    ]
+                    ['role' => 'system', 'content' => "Output JSON valid: " . json_encode($jsonSchema)],
+                    ['role' => 'user', 'content' => $content]
                 ],
                 'temperature' => 0.5,
                 'response_format' => ['type' => 'json_object'],
             ]);
 
         if ($response->failed()) {
-            throw new \Exception('Gagal menghubungi KA: ' . $response->status());
+            throw new \Exception("Gagal KA: " . $response->status() . " " . $response->body());
         }
 
         $data = $response->json();
-        $raw = $data['choices'][0]['message']['content'] ?? '';
 
+        $raw = $data['choices'][0]['message']['content'] ?? '{}';
         $cleanJson = preg_replace('/^```(?:json)?\s*/i', '', trim($raw));
         $cleanJson = preg_replace('/\s*```$/', '', $cleanJson);
 
         $decoded = json_decode($cleanJson, true);
 
-        return $decoded ?? [];
+        if (!$decoded) {
+            throw new \Exception("Format respon KA tidak valid JSON.");
+        }
+
+        return $decoded;
     }
 }
