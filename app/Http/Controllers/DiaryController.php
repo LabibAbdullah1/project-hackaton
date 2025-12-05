@@ -151,7 +151,7 @@ class DiaryController extends Controller
         }
 
         $jsonSchema = [
-            'mood' => 'string (Singkat: Senang/Sedih/Cemas/Lelah)',
+            'mood' => 'string (Singkat: Senang/Sedih/Cemas/Lelah/Marah/Tenang/Stres)',
             'mood_score' => 'integer (0-100)',
             'reflection' => 'string (Refleksi hangat maks 2 kalimat)',
             'habit_insight' => 'string (Saran aksi maks 2 kalimat)',
