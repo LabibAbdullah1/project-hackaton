@@ -38,7 +38,7 @@ class DiaryController extends Controller
 
         // 2. Simpan Data Diary ke Database
         $diary = Diary::create([
-            'user_id' => Auth::id(), // Gunakan Auth asli
+            'user_id' => Auth::id(),
             'content' => $request->input('content'),
             'is_private' => $request->input('is_private'),
         ]);
@@ -49,11 +49,10 @@ class DiaryController extends Controller
             $message = 'Diary berhasil disimpan dan Analisis KA selesai!';
             $status = 'success';
         } catch (\Exception $e) {
-            // Jika KA Gagal, catat di log server tapi jangan bikin user error
             Log::error("KA Error pada Diary ID {$diary->id}: " . $e->getMessage());
 
             $message = 'Diary berhasil disimpan, namun Analisis KA sedang tidak tersedia saat ini.';
-            $status = 'warning'; // Bisa dipakai di view untuk warna alert kuning
+            $status = 'warning';
         }
 
         // 4. Redirect ke halaman detail atau index
@@ -158,7 +157,7 @@ class DiaryController extends Controller
             'Content-Type'  => 'application/json',
             'Accept'        => 'application/json',
         ])
-        ->timeout(45) // Timeout jangan terlalu lama agar user tidak menunggu
+        ->timeout(45)
         ->post($baseUrl, [
             'model' => $model,
             'messages' => [
@@ -175,7 +174,6 @@ class DiaryController extends Controller
 
         $data = $response->json();
 
-        // Bersihkan JSON dari Markdown ```json ... ```
         $raw = $data['choices'][0]['message']['content'] ?? '{}';
         $cleanJson = preg_replace('/^```(?:json)?\s*/i', '', trim($raw));
         $cleanJson = preg_replace('/\s*```$/', '', $cleanJson);
