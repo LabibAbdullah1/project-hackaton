@@ -23,7 +23,7 @@ class Diary extends Model
     ];
 
     protected $attributes = [
-        'is_private' => true, // atau 1
+        'is_private' => true,
     ];
 
     public function user(): BelongsTo
