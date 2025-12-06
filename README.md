@@ -169,15 +169,15 @@ php artisan serve
 - Laravel Breeze - Authentication
 
 ## ✍️ Authors <a name = "authors"></a>
-- @LabibAbdullah1  - Backend & Logic
+- [@LabibAbdullah1](https://github.com/LabibAbdullah1)  - Backend & Logic
 
-- @rfldisyah - Frontend & UI/UX
+- [@rfldisyah](https://github.com/rfldisyah) - Frontend & UI/UX
 
 ### Lihat juga daftar kontributor yang berpartisipasi dalam proyek ini.
 
-- @LeniComelll-coder
+- [@LeniComelll-coder](https://github.com/LeniComelll-coder)
 
-- @alfa03r
+- [@alfa03r](https://github.com/alfa03r)
 
 ## 🎉 Acknowledgments <a name = "acknowledgments"></a>
 - Terima kasih kepada Kolosal.ai atas penyediaan API yang hebat.
