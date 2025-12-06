@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Diary extends Model
 {
     use HasFactory;
+    
 
     protected $fillable = [
         'user_id',

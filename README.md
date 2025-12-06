@@ -1,12 +1,15 @@
 <div align="center">
-  <img src="public/img/logovibesenseai.png" alt="Tampilan Utama Aplikasi" width="600">
+  <img src="public/img/logovibesenseai.png" alt="Tampilan Utama Aplikasi" width="400">
 </div>
 
 <h3 align="center">VibeSenseAi: Smart Mood Tracker & Diary</h3>
 
 <div align="center">
 
-[![Hackathon](https://img.shields.io/badge/Hackathon-2025-orange.svg)](http://hackathon.url.com)
+[![Hackathon](https://img.shields.io/badge/Hackathon-2025-orange.svg)]()
+[![IMPHNEN](https://img.shields.io/badge/IMPHNEN-2025-blue.svg)]()
+[![KOLOSAL Ai](https://img.shields.io/badge/KOLOSAL-API-black.svg)]() 
+[![Duck.SC](https://img.shields.io/badge/Duck-SC-yellow.svg)]()
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
 [![Platform](https://img.shields.io/badge/platform-web-blue.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
@@ -169,15 +172,15 @@ php artisan serve
 - Laravel Breeze - Authentication
 
 ## ✍️ Authors <a name = "authors"></a>
-- @LabibAbdullah1  - Backend & Logic
+- [@LabibAbdullah1](https://github.com/LabibAbdullah1)  - Backend & Logic
 
-- @rfldisyah - Frontend & UI/UX
+- [@rfldisyah](https://github.com/rfldisyah) - Frontend & UI/UX
 
 ### Lihat juga daftar kontributor yang berpartisipasi dalam proyek ini.
 
-- @LeniComelll-coder
+- [@LeniComelll-coder](https://github.com/LeniComelll-coder)
 
-- @alfa03r
+- [@alfa03r](https://github.com/alfa03r)
 
 ## 🎉 Acknowledgments <a name = "acknowledgments"></a>
 - Terima kasih kepada Kolosal.ai atas penyediaan API yang hebat.

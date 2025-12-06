@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Http\Controllers;
 
 use App\Models\Diary;
@@ -21,42 +22,64 @@ class DiaryController extends Controller
         return view('user.diary.index', compact('diaries'));
     }
 
+
     public function create()
     {
         return view('user.diary.create');
     }
 
     public function store(Request $request)
-    {
-        // 1. Validasi Input
-        $request->validate([
-            'content' => 'required|string|min:10',
-            'is_private' => 'required|boolean',
+{
+    $request->validate([
+        'content' => 'required|string|min:10',
+    ]);
+
+    // Simpan diary
+    $diary = Diary::create([
+        'user_id' => Auth::id(),
+        'content' => $request->input('content'),
+    ]);
+
+    try {
+        // Panggil API KA
+        $analysisData = $this->callKaApi($diary->content);
+
+        // Simpan analysis
+        $analysis = DiaryAnalysis::create([
+            'diary_id' => $diary->id,
+            'mood' => $analysisData['mood'] ?? 'Netral',
+            'mood_score' => $analysisData['mood_score'] ?? 50,
+            'reflection' => $analysisData['reflection'] ?? 'Tidak ada refleksi.',
+            'habit_insight' => $analysisData['habit_insight'] ?? 'Belum ada habit.',
         ]);
 
-        // 2. Simpan Data Diary ke Database
-        $diary = Diary::create([
-            'user_id' => Auth::id(),
-            'content' => $request->input('content'),
-            'is_private' => $request->input('is_private'),
+        Log::info('=== DIARY ANALYSIS DEBUG ===');
+        Log::info('Diary ID: ' . $diary->id);
+        Log::info('Analysis ID: ' . $analysis->id);
+        Log::info('Reflection: ' . $analysis->reflection);
+        Log::info('Habit: ' . $analysis->habit_insight);
+        
+        return view('user.diary.create', [
+            'diary' => $diary,
+            'analysis' => $analysis,
+            'success' => true
         ]);
 
-        // 3. Proses KA (Dengan Error Handling Halus)
-        try {
-            $this->processAnalysis($diary);
+    } catch (\Exception $e) {
+        Log::error("Analisis AI error: " . $e->getMessage());
+        Log::error($e->getTraceAsString());
 
-            return redirect()
-                ->route('user.diary.index')
-                ->with('success', 'Diary berhasil disimpan dan analisis AI selesai!');
-        } catch (\Exception $e) {
-
-            Log::error("KA Error pada Diary ID {$diary->id}: " . $e->getMessage());
-
-            return redirect()
-                ->route('user.diary.index')
-                ->with('warning', 'Diary berhasil disimpan, namun analisis AI sedang tidak tersedia saat ini.');
-        }
+        return view('user.diary.create', [
+            'diary' => $diary,
+            'error' => 'Diary tersimpan, tapi analisis AI gagal: ' . $e->getMessage()
+        ]);
     }
+}
+
+
+
+
+
 
     public function show($id)
     {
