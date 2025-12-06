@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/img/logovibesenseai.png" alt="Tampilan Utama Aplikasi" width="600">
+  <img src="public/img/logovibesenseai.png" alt="Tampilan Utama Aplikasi" width="400">
 </div>
 
 <h3 align="center">VibeSenseAi: Smart Mood Tracker & Diary</h3>
